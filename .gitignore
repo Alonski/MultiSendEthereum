@@ -1,0 +1,16 @@
+*sublime*
+*.pyc
+build/
+logs/
+fabfile.py
+node_modules/
+NOTES.md
+test/play.js
+tmp/
+installed_contracts/
+remarks.md
+.node-xmlhttprequest-sync*
+*.tgz
+testrpc/
+kovan_pass.txt
+.vscode/settings.json
