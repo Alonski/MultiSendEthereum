@@ -6,25 +6,41 @@ import '../contracts/MultiSend.sol';
 
 contract TestMultiSend {
     MultiSend multiSender = MultiSend(DeployedAddresses.MultiSend());
-    uint public initialBalance = 10 ether;
+    uint public initialBalance = 1000000 ether;
 
-    function testCanSendToTwoAddresses() public {
+    function testEscapeHatchCallerIsZero() public {
+        address expected = address(0);
+
+        address escapeHatch = multiSender.escapeHatchCaller();
+
+        Assert.equal(expected, escapeHatch, "Escape Hatch Address is 0");
+    }
+
+/*     function testCanSendToTwoAddresses() public {
         uint expected = this.balance-100;
 
-        address first = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
-        address second = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
+        address firstAddress = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
+        address secondAddress = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
+
+        address[] memory addresses = new address[](2);
+        addresses[0] = firstAddress;
+        addresses[1] = secondAddress;
         
         uint amountFirst = 50;
         uint amountSecond = 50;
 
-        multiSender.multiSendTwo.value(100)([first,second],[amountFirst,amountSecond]);
+        uint[] memory amounts = new uint[](2);
+        amounts[0] = amountFirst;
+        amounts[1] = amountSecond;
+
+        multiSender.multiTransfer.value(100)(addresses,amounts);
 
         uint afterSend = this.balance;
 
         Assert.equal(afterSend, expected, "Balance is correct after TwoSend");
-    }
+    } */
 
-    function testCanSendToThreeAddresses() public {
+    /* function testCanSendToThreeAddresses() public {
         uint expected = this.balance-150;
 
         address first = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
@@ -61,7 +77,7 @@ contract TestMultiSend {
         uint afterSend = this.balance;
 
         Assert.equal(afterSend, expected, "Balance is correct after FourSend");
-    }
+    } */
 
     function () public payable {
 
