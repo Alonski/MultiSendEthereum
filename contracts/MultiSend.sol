@@ -8,54 +8,8 @@ import "giveth-common-contracts/contracts/SafeMath.sol";
 // Supports deterministic deployment. As explained here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
 contract MultiSend is Escapable {
   
-<<<<<<< HEAD
-  address CALLER = 0x839395e20bbB182fa440d08F850E6c7A8f6F0780;
-  address DESTINATION = 0x8Ff920020c8AD673661c8117f2855C384758C572;
-
-  function MultiSend() Escapable(CALLER, DESTINATION) public {}
-  
-  function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
-    uint toReturn = msg.value;
-    for (uint i = 0; i < _addressAndAmount.length; i++) {
-        _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
-        toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
-    }
-    _safeTransfer(msg.sender, toReturn);
-    return true;
-  }
-
-  function multiTransfer(address[] _address, uint[] _amount) payable public returns(bool) {
-    uint toReturn = msg.value;
-    for (uint i = 0; i < _address.length; i++) {
-        _safeTransfer(_address[i], _amount[i]);
-        toReturn = SafeMath.sub(toReturn, _amount[i]);
-    }
-    _safeTransfer(msg.sender, toReturn);
-    return true;
-  }
-
-  function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
-      uint toReturn = msg.value;
-      for (uint i = 0; i < _addressAndAmount.length; i++) {
-          _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
-          toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
-      }
-      _safeTransfer(msg.sender, toReturn);
-      return true;
-  }
-
-  function multiCall(address[] _address, uint[] _amount) payable public returns(bool) {
-      uint toReturn = msg.value;
-      for (uint i = 0; i < _address.length; i++) {
-          _safeCall(_address[i], _amount[i]);
-          toReturn = SafeMath.sub(toReturn, _amount[i]);
-      }
-      _safeTransfer(msg.sender, toReturn);
-      return true;
-  }
-=======
     address CALLER = 0x839395e20bbB182fa440d08F850E6c7A8f6F0780;
-    address DESTINATION = 0x8ff920020c8ad673661c8117f2855c384758c572;
+    address DESTINATION = 0x8Ff920020c8AD673661c8117f2855C384758C572;
 
     event MultiTransfer(
         address indexed _from,
@@ -79,40 +33,52 @@ contract MultiSend is Escapable {
         ERC20 _token
     );
 
+
     function MultiSend() Escapable(CALLER, DESTINATION) public {}
     
-    function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public {
+    function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
+        uint toReturn = msg.value;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
-            address to = address(_addressAndAmount[i] >> 96);
-            uint amount = uint(uint96(_addressAndAmount[i]));
-            _safeTransfer(to, amount);
+            _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+            toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
             MultiTransfer(msg.sender, msg.value, to, amount);
         }
+        _safeTransfer(msg.sender, toReturn);
+        return true;
     }
 
-    function multiTransfer(address[] _address, uint[] _amount) payable public {
+    function multiTransfer(address[] _address, uint[] _amount) payable public returns(bool) {
+        uint toReturn = msg.value;
         for (uint i = 0; i < _address.length; i++) {
             _safeTransfer(_address[i], _amount[i]);
+            toReturn = SafeMath.sub(toReturn, _amount[i]);
             MultiTransfer(msg.sender, msg.value, _address[i], _amount[i]);
         }
+        _safeTransfer(msg.sender, toReturn);
+        return true;
     }
 
-    function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public {
+    function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
+        uint toReturn = msg.value;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
-            address to = address(_addressAndAmount[i] >> 96);
-            uint amount = uint(uint96(_addressAndAmount[i]));
-            _safeCall(to, amount);
+            _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+            toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
             MultiCall(msg.sender, msg.value, to, amount);
         }
+        _safeTransfer(msg.sender, toReturn);
+        return true;
     }
 
-    function multiCall(address[] _address, uint[] _amount) payable public {
+    function multiCall(address[] _address, uint[] _amount) payable public returns(bool) {
+        uint toReturn = msg.value;
         for (uint i = 0; i < _address.length; i++) {
             _safeCall(_address[i], _amount[i]);
+            toReturn = SafeMath.sub(toReturn, _amount[i]);
             MultiCall(msg.sender, msg.value, _address[i], _amount[i]);
         }
+        _safeTransfer(msg.sender, toReturn);
+        return true;
     }
->>>>>>> 9d8157bfa245b22ae4a295e806900ec2d2b1f51d
 
     function multiERC20TransferTightlyPacked(ERC20 _token, bytes32[] _addressAndAmount) public {
         for (uint i = 0; i < _addressAndAmount.length; i++) {
