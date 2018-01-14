@@ -18,12 +18,12 @@ contract TestMultiSend {
     }
 
     function testEscapeHatchDestinationIsWHG() public {
-        address expected = address(0x8ff920020c8ad673661c8117f2855c384758c572);
+        address expected = address(0x8Ff920020c8AD673661c8117f2855C384758C572);
 
         address destination = multiSender.escapeHatchDestination();
 
         Assert.equal(expected, destination,
-        "Escape Hatch Caller is Address is 0x8ff920020c8ad673661c8117f2855c384758c572");
+        "Escape Hatch Caller is Address is 0x8Ff920020c8AD673661c8117f2855C384758C572");
     }
 
     function testCanSendToTwoAddresses() public {
