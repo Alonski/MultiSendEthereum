@@ -1,16 +1,20 @@
 pragma solidity ^0.4.18;
 
-import "giveth-common-contracts/contracts/Escapable.sol";
+import "node_modules/giveth-common-contracts/contracts/Escapable.sol";
 
 // TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
 // Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.
 // Supports deterministic deployment. As explained here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
 contract MultiSend is Escapable {
   
-  function MultiSend() Escapable(0,0) public {}
+  address CALLER = 0x839395e20bbB182fa440d08F850E6c7A8f6F0780;
+  address DESTINATION = 0x8ff920020c8ad673661c8117f2855c384758c572;
+
+  function MultiSend() Escapable(CALLER, DESTINATION) public {}
   
   function init(address _escapeHatchCaller, address _escapeHatchDestination) public {
-    require(escapeHatchCaller == 0);
+    require(msg.sender == CALLER);
+    require(escapeHatchCaller == CALLER);
     require(_escapeHatchCaller != 0);
     require(_escapeHatchDestination != 0);
     escapeHatchCaller = _escapeHatchCaller;
