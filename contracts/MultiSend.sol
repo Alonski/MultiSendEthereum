@@ -12,15 +12,6 @@ contract MultiSend is Escapable {
 
   function MultiSend() Escapable(CALLER, DESTINATION) public {}
   
-  function init(address _escapeHatchCaller, address _escapeHatchDestination) public {
-    require(msg.sender == CALLER);
-    require(escapeHatchCaller == CALLER);
-    require(_escapeHatchCaller != 0);
-    require(_escapeHatchDestination != 0);
-    escapeHatchCaller = _escapeHatchCaller;
-    escapeHatchDestination = _escapeHatchDestination;
-  }
-
   function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
     for (uint i = 0; i < _addressAndAmount.length; i++) {
         _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
