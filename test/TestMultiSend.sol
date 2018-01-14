@@ -6,7 +6,7 @@ import '../contracts/MultiSend.sol';
 
 contract TestMultiSend {
     MultiSend multiSender = MultiSend(DeployedAddresses.MultiSend());
-    uint public initialBalance = 1000000 ether;
+    uint public initialBalance = 10 ether;
 
     function testEscapeHatchCallerIsGriff() public {
         address expected = address(0x839395e20bbB182fa440d08F850E6c7A8f6F0780);
