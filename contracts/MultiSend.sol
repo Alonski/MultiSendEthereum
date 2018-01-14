@@ -1,15 +1,29 @@
+// Copyright (C) 2018 Alon Bukai This program is free software: you 
+// can redistribute it and/or modify it under the terms of the GNU General 
+// Public License as published by the Free Software Foundation, version. 
+// This program is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+// or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details. You should have received a copy of the GNU General Public
+// License along with this program. If not, see http://www.gnu.org/licenses/
+
 pragma solidity ^0.4.18;
 
 import "giveth-common-contracts/contracts/Escapable.sol";
 import "giveth-common-contracts/contracts/SafeMath.sol";
 
-// TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
-// Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.
-// Supports deterministic deployment. As explained here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
+/// @notice MultiSend is a contract for sending multiple ETH/ERC20 Tokens to multiple addresses
+/// In addition this contract can call multiple contracts with multiple amounts
+/// There are also TightlyPacked functions which in some situations allow for gas savings
+/// TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
+/// Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.
+/// Supports deterministic deployment. As explained here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
 contract MultiSend is Escapable {
   
+    /// @notice Hardcoded escapeHatchCaller
     address CALLER = 0x839395e20bbB182fa440d08F850E6c7A8f6F0780;
-    address DESTINATION = 0x8Ff920020c8AD673661c8117f2855C384758C572;
+    /// @notice Hardcoded escapeHatchDestination
+    address DESTINATION = 0x8ff920020c8ad673661c8117f2855c384758c572;
 
     event MultiTransfer(
         address indexed _from,
@@ -33,9 +47,13 @@ contract MultiSend is Escapable {
         ERC20 _token
     );
 
-
+    /// @notice Constructor using Escapable and Hardcoded values
     function MultiSend() Escapable(CALLER, DESTINATION) public {}
-    
+
+    /// @notice Send to multiple addresses using a byte32 array which
+    /// includes the address and the amount.
+    /// Payable
+    /// @param _addressesAndAmounts Bitwise packed array of addresses and amounts
     function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
         uint toReturn = msg.value;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
@@ -47,6 +65,11 @@ contract MultiSend is Escapable {
         return true;
     }
 
+    /// @notice Send to multiple addresses using two arrays which
+    /// includes the address and the amount.
+    /// Payable
+    /// @param _addresses Array of addresses to send to
+    /// @param _amounts Array of amounts to send
     function multiTransfer(address[] _address, uint[] _amount) payable public returns(bool) {
         uint toReturn = msg.value;
         for (uint i = 0; i < _address.length; i++) {
@@ -58,6 +81,10 @@ contract MultiSend is Escapable {
         return true;
     }
 
+    /// @notice Call to multiple contracts using a byte32 array which
+    /// includes the contract address and the amount.
+    /// Payable
+    /// @param _addressesAndAmounts Bitwise packed array of contract addresses and amounts
     function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
         uint toReturn = msg.value;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
@@ -69,6 +96,10 @@ contract MultiSend is Escapable {
         return true;
     }
 
+    /// @notice Call to multiple contracts using two arrays which
+    /// includes the contract address and the amount.
+    /// @param _addresses Array of contract addresses to call
+    /// @param _amounts Array of amounts to send
     function multiCall(address[] _address, uint[] _amount) payable public returns(bool) {
         uint toReturn = msg.value;
         for (uint i = 0; i < _address.length; i++) {
@@ -80,6 +111,9 @@ contract MultiSend is Escapable {
         return true;
     }
 
+    /// @notice Send ERC20 tokens to multiple contracts 
+    /// using a byte32 array which includes the address and the amount.
+    /// @param _addressesAndAmounts Bitwise packed array of addresses and token amounts
     function multiERC20TransferTightlyPacked(ERC20 _token, bytes32[] _addressAndAmount) public {
         for (uint i = 0; i < _addressAndAmount.length; i++) {
             address to = address(_addressAndAmount[i] >> 96);
@@ -89,6 +123,11 @@ contract MultiSend is Escapable {
         }
     }
 
+    /// @notice Send ERC20 tokens to multiple contracts
+    /// using two arrays which includes the address and the amount.
+    /// @param _token The token to send
+    /// @param _addresses Array of addresses to send to
+    /// @param _amounts Array of token amounts to send
     function multiERC20Transfer(ERC20 _token, address[] _address, uint[] _amount) public {
         for (uint i = 0; i < _address.length; i++) {
             _safeERC20Transfer(_token, _address[i], _amount[i]);
@@ -110,7 +149,8 @@ contract MultiSend is Escapable {
         require(_to != 0);
         require(_token.transferFrom(msg.sender, _to, _amount));
     }
-    
+
+    /// @dev Default payable function to not allow sending to contract
     function () public payable {
         revert();
     }
