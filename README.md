@@ -42,7 +42,7 @@ This allows calling one function with parameters to send multiple amounts to mul
 
 * __Why is there both a truffle.js file and a truffle-config.js file?__
 
-    `truffle-config.js` is a copy of `truffle.js` for compatibility with Windows development environments. Feel free to it if it's irrelevant to your platform.
+    `truffle-config.js` is a copy of `truffle.js` for compatibility with Windows development environments. Feel free to remove it if it's irrelevant to your platform.
 
 
 * __Where can I find more documentation?__
