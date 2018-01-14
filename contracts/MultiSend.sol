@@ -1,6 +1,7 @@
 pragma solidity ^0.4.18;
 
 import "giveth-common-contracts/contracts/Escapable.sol";
+import "giveth-common-contracts/contracts/SafeMath.sol";
 
 // TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
 // Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.
@@ -13,30 +14,42 @@ contract MultiSend is Escapable {
   function MultiSend() Escapable(CALLER, DESTINATION) public {}
   
   function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
+    uint toReturn = msg.value;
     for (uint i = 0; i < _addressAndAmount.length; i++) {
         _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+        toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
     }
+    _safeTransfer(msg.sender, toReturn);
     return true;
   }
 
   function multiTransfer(address[] _address, uint[] _amount) payable public returns(bool) {
+    uint toReturn = msg.value;
     for (uint i = 0; i < _address.length; i++) {
         _safeTransfer(_address[i], _amount[i]);
+        toReturn = SafeMath.sub(toReturn, _amount[i]);
     }
+    _safeTransfer(msg.sender, toReturn);
     return true;
   }
 
   function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
+      uint toReturn = msg.value;
       for (uint i = 0; i < _addressAndAmount.length; i++) {
           _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+          toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
       }
+      _safeTransfer(msg.sender, toReturn);
       return true;
   }
 
   function multiCall(address[] _address, uint[] _amount) payable public returns(bool) {
+      uint toReturn = msg.value;
       for (uint i = 0; i < _address.length; i++) {
           _safeCall(_address[i], _amount[i]);
+          toReturn = SafeMath.sub(toReturn, _amount[i]);
       }
+      _safeTransfer(msg.sender, toReturn);
       return true;
   }
 
