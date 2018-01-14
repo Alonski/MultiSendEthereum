@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "node_modules/giveth-common-contracts/contracts/Escapable.sol";
+import "../node_modules/giveth-common-contracts/contracts/Escapable.sol";
 
 // TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
 // Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.

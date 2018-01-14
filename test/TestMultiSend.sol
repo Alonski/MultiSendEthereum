@@ -8,15 +8,25 @@ contract TestMultiSend {
     MultiSend multiSender = MultiSend(DeployedAddresses.MultiSend());
     uint public initialBalance = 1000000 ether;
 
-    function testEscapeHatchCallerIsZero() public {
-        address expected = address(0);
+    function testEscapeHatchCallerIsGriff() public {
+        address expected = address(0x839395e20bbB182fa440d08F850E6c7A8f6F0780);
 
-        address escapeHatch = multiSender.escapeHatchCaller();
+        address caller = multiSender.escapeHatchCaller();
 
-        Assert.equal(expected, escapeHatch, "Escape Hatch Address is 0");
+        Assert.equal(expected, caller,
+        "Escape Hatch Caller is Address is 0x839395e20bbB182fa440d08F850E6c7A8f6F0780");
     }
 
-/*     function testCanSendToTwoAddresses() public {
+    function testEscapeHatchDestinationIsWHG() public {
+        address expected = address(0x8ff920020c8ad673661c8117f2855c384758c572);
+
+        address destination = multiSender.escapeHatchDestination();
+
+        Assert.equal(expected, destination,
+        "Escape Hatch Caller is Address is 0x8ff920020c8ad673661c8117f2855c384758c572");
+    }
+
+    function testCanSendToTwoAddresses() public {
         uint expected = this.balance-100;
 
         address firstAddress = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
@@ -38,7 +48,7 @@ contract TestMultiSend {
         uint afterSend = this.balance;
 
         Assert.equal(afterSend, expected, "Balance is correct after TwoSend");
-    } */
+    }
 
     /* function testCanSendToThreeAddresses() public {
         uint expected = this.balance-150;
