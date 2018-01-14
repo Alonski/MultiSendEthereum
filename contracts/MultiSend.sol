@@ -1,74 +1,117 @@
+// Copyright (C) 2018 Alon Bukai This program is free software: you 
+// can redistribute it and/or modify it under the terms of the GNU General 
+// Public License as published by the Free Software Foundation, version. 
+// This program is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+// or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+// more details. You should have received a copy of the GNU General Public
+// License along with this program. If not, see http://www.gnu.org/licenses/
+
 pragma solidity ^0.4.18;
 
 import "giveth-common-contracts/contracts/Escapable.sol";
 
-// TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
-// Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.
-// Supports deterministic deployment. As explained here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
+/// @notice MultiSend is a contract for sending multiple ETH/ERC20 Tokens to multiple addresses
+/// In addition this contract can call multiple contracts with multiple amounts
+/// There are also TightlyPacked functions which in some situations allow for gas savings
 contract MultiSend is Escapable {
   
+  // TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
+  // Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.
+  // Supports deterministic deployment. As explained here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
+
+
+  /// @notice Hardcoded escapeHatchCaller
   address CALLER = 0x839395e20bbB182fa440d08F850E6c7A8f6F0780;
+  /// @notice Hardcoded escapeHatchDestination
   address DESTINATION = 0x8ff920020c8ad673661c8117f2855c384758c572;
 
+  /// @notice Constructor using Escapable and Hardcoded values
   function MultiSend() Escapable(CALLER, DESTINATION) public {}
   
-  function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
-    for (uint i = 0; i < _addressAndAmount.length; i++) {
-        _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+  /// @notice Send to multiple addresses using a byte32 array which
+  /// includes the address and the amount.
+  /// Payable
+  /// @param _addressesAndAmounts Bitwise packed array of addresses and amounts
+  function multiTransferTightlyPacked(bytes32[] _addressesAndAmounts) payable public returns(bool) {
+    for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+        _safeTransfer(address(_addressesAndAmounts[i] >> 96), uint(uint96(_addressesAndAmounts[i])));
     }
     return true;
   }
 
-  function multiTransfer(address[] _address, uint[] _amount) payable public returns(bool) {
-    for (uint i = 0; i < _address.length; i++) {
-        _safeTransfer(_address[i], _amount[i]);
+  /// @notice Send to multiple addresses using two arrays which
+  /// includes the address and the amount.
+  /// Payable
+  /// @param _addresses Array of addresses to send to
+  /// @param _amounts Array of amounts to send
+  function multiTransfer(address[] _addresses, uint[] _amounts) payable public returns(bool) {
+    for (uint i = 0; i < _addresses.length; i++) {
+        _safeTransfer(_addresses[i], _amounts[i]);
     }
     return true;
   }
 
-  function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
-      for (uint i = 0; i < _addressAndAmount.length; i++) {
-          _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+  /// @notice Call to multiple contracts using a byte32 array which
+  /// includes the contract address and the amount.
+  /// Payable
+  /// @param _addressesAndAmounts Bitwise packed array of contract addresses and amounts
+  function multiCallTightlyPacked(bytes32[] _addressesAndAmounts) payable public returns(bool) {
+      for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+          _safeCall(address(_addressesAndAmounts[i] >> 96), uint(uint96(_addressesAndAmounts[i])));
       }
       return true;
   }
 
-  function multiCall(address[] _address, uint[] _amount) payable public returns(bool) {
-      for (uint i = 0; i < _address.length; i++) {
-          _safeCall(_address[i], _amount[i]);
+  /// @notice Call to multiple contracts using two arrays which
+  /// includes the contract address and the amount.
+  /// @param _addresses Array of contract addresses to call
+  /// @param _amounts Array of amounts to send
+  function multiCall(address[] _addresses, uint[] _amounts) payable public returns(bool) {
+      for (uint i = 0; i < _addresses.length; i++) {
+          _safeCall(_addresses[i], _amounts[i]);
       }
       return true;
   }
 
-  function multiERC20TransferTightlyPacked(ERC20 _token, bytes32[] _addressAndAmount) public returns(bool) {
-      for (uint i = 0; i < _addressAndAmount.length; i++) {
-          _safeERC20Transfer(_token, address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+  /// @notice Send ERC20 tokens to multiple contracts 
+  /// using a byte32 array which includes the address and the amount.
+  /// @param _addressesAndAmounts Bitwise packed array of addresses and token amounts
+  function multiERC20TransferTightlyPacked(ERC20 _token, bytes32[] _addressesAndAmounts) public returns(bool) {
+      for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+          _safeERC20Transfer(_token, address(_addressesAndAmounts[i] >> 96), uint(uint96(_addressesAndAmounts[i])));
       }
       return true;
   }
 
-  function multiERC20Transfer(ERC20 _token, address[] _address, uint[] _amount) public returns(bool) {
-      for (uint i = 0; i < _address.length; i++) {
-          _safeERC20Transfer(_token, _address[i], _amount[i]);
+  /// @notice Send ERC20 tokens to multiple contracts
+  /// using two arrays which includes the address and the amount.
+  /// @param _token The token to send
+  /// @param _addresses Array of addresses to send to
+  /// @param _amounts Array of token amounts to send
+  function multiERC20Transfer(ERC20 _token, address[] _addresses, uint[] _amounts) public returns(bool) {
+      for (uint i = 0; i < _addresses.length; i++) {
+          _safeERC20Transfer(_token, _addresses[i], _amounts[i]);
       }
       return true;
   }
 
-  function _safeTransfer(address _to, uint _amount) internal {
+  function _safeTransfer(address _to, uint _amounts) internal {
       require(_to != 0);
-      _to.transfer(_amount);
+      _to.transfer(_amounts);
   }
 
-  function _safeCall(address _to, uint _amount) internal {
+  function _safeCall(address _to, uint _amounts) internal {
       require(_to != 0);
-      require(_to.call.value(_amount)());
+      require(_to.call.value(_amounts)());
   }
 
-  function _safeERC20Transfer(ERC20 _token, address _to, uint _amount) internal {
+  function _safeERC20Transfer(ERC20 _token, address _to, uint _amounts) internal {
       require(_to != 0);
-      require(_token.transferFrom(msg.sender, _to, _amount));
+      require(_token.transferFrom(msg.sender, _to, _amounts));
   }
   
+  /// @dev Default payable function to not allow sending to contract
   function () public payable {
     revert();
   }
