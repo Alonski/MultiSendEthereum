@@ -37,46 +37,46 @@ contract MultiSend is Escapable {
     function MultiSend() Escapable(CALLER, DESTINATION) public {}
     
     function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
-        uint toReturn = msg.value;
+        uint startBalance = this.balance;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
             _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
             toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
             MultiTransfer(msg.sender, msg.value, to, amount);
         }
-        _safeTransfer(msg.sender, toReturn);
+        require(startBalance - msg.value == this.balance);
         return true;
     }
 
     function multiTransfer(address[] _address, uint[] _amount) payable public returns(bool) {
-        uint toReturn = msg.value;
+        uint startBalance = this.balance;
         for (uint i = 0; i < _address.length; i++) {
             _safeTransfer(_address[i], _amount[i]);
             toReturn = SafeMath.sub(toReturn, _amount[i]);
             MultiTransfer(msg.sender, msg.value, _address[i], _amount[i]);
         }
-        _safeTransfer(msg.sender, toReturn);
+        require(startBalance - msg.value == this.balance);
         return true;
     }
 
     function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
-        uint toReturn = msg.value;
+        uint startBalance = this.balance;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
             _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
             toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
             MultiCall(msg.sender, msg.value, to, amount);
         }
-        _safeTransfer(msg.sender, toReturn);
+        require(startBalance - msg.value == this.balance);
         return true;
     }
 
     function multiCall(address[] _address, uint[] _amount) payable public returns(bool) {
-        uint toReturn = msg.value;
+        uint startBalance = this.balance;
         for (uint i = 0; i < _address.length; i++) {
             _safeCall(_address[i], _amount[i]);
             toReturn = SafeMath.sub(toReturn, _amount[i]);
             MultiCall(msg.sender, msg.value, _address[i], _amount[i]);
         }
-        _safeTransfer(msg.sender, toReturn);
+        require(startBalance - msg.value == this.balance);
         return true;
     }
 
