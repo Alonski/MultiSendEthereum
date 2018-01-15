@@ -12,7 +12,7 @@ pragma solidity ^0.4.18;
 import "giveth-common-contracts/contracts/Escapable.sol";
 import "giveth-common-contracts/contracts/SafeMath.sol";
 
-/// @notice MultiSend is a contract for sending multiple ETH/ERC20 Tokens to multiple addresses
+/// @notice `MultiSend` is a contract for sending multiple ETH/ERC20 Tokens to multiple addresses
 /// In addition this contract can call multiple contracts with multiple amounts
 /// There are also TightlyPacked functions which in some situations allow for gas savings
 /// TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
@@ -52,13 +52,21 @@ contract MultiSend is Escapable {
 
     /// @notice Send to multiple addresses using a byte32 array which
     /// includes the address and the amount.
+    /// Addresses and amounts are stored in a packed bytes32 array
+    /// Address is stored in the 20 most significant bytes
+    /// The address is retrieved by bitshifting 96 bits to the right
+    /// Amount is stored in the 12 least significant bytes
+    /// The amount is retrieved by taking the 96 least significant bytes
+    /// and converting them into an unsigned integer
     /// Payable
     /// @param _addressesAndAmounts Bitwise packed array of addresses and amounts
-    function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
+    function multiTransferTightlyPacked(bytes32[] _addressesAndAmounts) payable public returns(bool) {
         uint toReturn = msg.value;
-        for (uint i = 0; i < _addressAndAmount.length; i++) {
-            _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
-            toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
+            uint amount = uint(uint96(_addressesAndAmounts[i]));
+            _safeTransfer(to, uint(uint96(_addressesAndAmounts[i])));
+            toReturn = SafeMath.sub(toReturn, amount);
             MultiTransfer(msg.sender, msg.value, to, amount);
         }
         _safeTransfer(msg.sender, toReturn);
@@ -70,12 +78,12 @@ contract MultiSend is Escapable {
     /// Payable
     /// @param _addresses Array of addresses to send to
     /// @param _amounts Array of amounts to send
-    function multiTransfer(address[] _address, uint[] _amount) payable public returns(bool) {
+    function multiTransfer(address[] _addresses, uint[] _amounts) payable public returns(bool) {
         uint toReturn = msg.value;
-        for (uint i = 0; i < _address.length; i++) {
-            _safeTransfer(_address[i], _amount[i]);
-            toReturn = SafeMath.sub(toReturn, _amount[i]);
-            MultiTransfer(msg.sender, msg.value, _address[i], _amount[i]);
+        for (uint i = 0; i < _addresses.length; i++) {
+            _safeTransfer(_addresses[i], _amounts[i]);
+            toReturn = SafeMath.sub(toReturn, _amounts[i]);
+            MultiTransfer(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
         _safeTransfer(msg.sender, toReturn);
         return true;
@@ -83,13 +91,21 @@ contract MultiSend is Escapable {
 
     /// @notice Call to multiple contracts using a byte32 array which
     /// includes the contract address and the amount.
+    /// Addresses and amounts are stored in a packed bytes32 array
+    /// Address is stored in the 20 most significant bytes
+    /// The address is retrieved by bitshifting 96 bits to the right
+    /// Amount is stored in the 12 least significant bytes
+    /// The amount is retrieved by taking the 96 least significant bytes
+    /// and converting them into an unsigned integer
     /// Payable
     /// @param _addressesAndAmounts Bitwise packed array of contract addresses and amounts
-    function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
+    function multiCallTightlyPacked(bytes32[] _addressesAndAmounts) payable public returns(bool) {
         uint toReturn = msg.value;
-        for (uint i = 0; i < _addressAndAmount.length; i++) {
-            _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
-            toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
+            uint amount = uint(uint96(_addressesAndAmounts[i]));
+            _safeCall(to, amount);
+            toReturn = SafeMath.sub(toReturn, uint(uint96(_addressesAndAmounts[i])));
             MultiCall(msg.sender, msg.value, to, amount);
         }
         _safeTransfer(msg.sender, toReturn);
@@ -100,7 +116,7 @@ contract MultiSend is Escapable {
     /// includes the contract address and the amount.
     /// @param _addresses Array of contract addresses to call
     /// @param _amounts Array of amounts to send
-    function multiCall(address[] _address, uint[] _amount) payable public returns(bool) {
+    function multiCall(address[] _addresses, uint[] _amounts) payable public returns(bool) {
         uint toReturn = msg.value;
         for (uint i = 0; i < _address.length; i++) {
             _safeCall(_address[i], _amount[i]);
@@ -113,11 +129,18 @@ contract MultiSend is Escapable {
 
     /// @notice Send ERC20 tokens to multiple contracts 
     /// using a byte32 array which includes the address and the amount.
+    /// Addresses and amounts are stored in a packed bytes32 array
+    /// Address is stored in the 20 most significant bytes
+    /// The address is retrieved by bitshifting 96 bits to the right
+    /// Amount is stored in the 12 least significant bytes
+    /// The amount is retrieved by taking the 96 least significant bytes
+    /// and converting them into an unsigned integer
+    /// @param _token The token to send
     /// @param _addressesAndAmounts Bitwise packed array of addresses and token amounts
-    function multiERC20TransferTightlyPacked(ERC20 _token, bytes32[] _addressAndAmount) public {
-        for (uint i = 0; i < _addressAndAmount.length; i++) {
-            address to = address(_addressAndAmount[i] >> 96);
-            uint amount = uint(uint96(_addressAndAmount[i]));
+    function multiERC20TransferTightlyPacked(ERC20 _token, bytes32[] _addressesAndAmounts) public {
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
+            uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeERC20Transfer(_token, to, amount);
             MultiERC20Transfer(msg.sender, msg.value, to, amount, _token);
         }
@@ -128,10 +151,10 @@ contract MultiSend is Escapable {
     /// @param _token The token to send
     /// @param _addresses Array of addresses to send to
     /// @param _amounts Array of token amounts to send
-    function multiERC20Transfer(ERC20 _token, address[] _address, uint[] _amount) public {
-        for (uint i = 0; i < _address.length; i++) {
-            _safeERC20Transfer(_token, _address[i], _amount[i]);
-            MultiERC20Transfer(msg.sender, msg.value, _address[i], _amount[i], _token);
+    function multiERC20Transfer(ERC20 _token, address[] _addresses, uint[] _amounts) public {
+        for (uint i = 0; i < _addresses.length; i++) {
+            _safeERC20Transfer(_token, _addresses[i], _amounts[i]);
+            MultiERC20Transfer(msg.sender, msg.value, _addresses[i], _amounts[i], _token);
         }
     }
 
