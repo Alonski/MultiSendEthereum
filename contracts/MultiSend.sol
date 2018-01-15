@@ -38,7 +38,9 @@ contract MultiSend is Escapable {
     function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
         uint startBalance = this.balance;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
-            _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+            address to = address(_addressAndAmount[i] >> 96);
+            uint amount = uint(uint96(_addressAndAmount[i]));
+            _safeTransfer(to, amount);
             MultiTransfer(msg.sender, msg.value, to, amount);
         }
         require(startBalance - msg.value == this.balance);
@@ -58,7 +60,9 @@ contract MultiSend is Escapable {
     function multiCallTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
         uint startBalance = this.balance;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
-            _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
+            address to = address(_addressAndAmount[i] >> 96);
+            uint amount = uint(uint96(_addressAndAmount[i]));
+            _safeCall(to, amount);
             MultiCall(msg.sender, msg.value, to, amount);
         }
         require(startBalance - msg.value == this.balance);
