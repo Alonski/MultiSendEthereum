@@ -59,69 +59,27 @@ contract TestMultiSend {
         Assert.equal(afterSend, expected, "Balance is correct after TwoSend");
     }
 
-    function testCanSendLeftoversTwoAddresses() public {
+    function testCanSendToTwoAddressesPacked() public {
         uint expected = this.balance-100;
 
         address firstAddress = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
         address secondAddress = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
 
-        address[] memory addresses = new address[](2);
-        addresses[0] = firstAddress;
-        addresses[1] = secondAddress;
-        
         uint amountFirst = 50;
         uint amountSecond = 50;
 
-        uint[] memory amounts = new uint[](2);
-        amounts[0] = amountFirst;
-        amounts[1] = amountSecond;
+        bytes32 firstPacked = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc000000000000000000000032;
+        bytes32 secondPacked = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE000000000000000000000032;
 
-        multiSender.multiTransfer.value(150)(addresses,amounts);
+        bytes32[] memory addrAmountPacked = new bytes32[](2);
+        addrAmountPacked[0] = firstPacked;
+        addrAmountPacked[1] = secondPacked;
+
+        multiSender.multiTransferTightlyPacked.value(100)(addrAmountPacked);
 
         uint afterSend = this.balance;
-
         Assert.equal(afterSend, expected, "Balance is correct after TwoSend");
-
     }
-
-    /* function testCanSendToThreeAddresses() public {
-        uint expected = this.balance-150;
-
-        address first = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
-        address second = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
-        address third = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
-        
-        uint amountFirst = 50;
-        uint amountSecond = 50;
-        uint amountThird = 50;
-
-        multiSender.multiSendThree.value(150)([first,second,third],[amountFirst,amountSecond,amountThird]);
-
-        uint afterSend = this.balance;
-
-        Assert.equal(afterSend, expected, "Balance is correct after ThreeSend");
-    }
-
-    function testCanSendToFourAddresses() public {
-        uint expected = this.balance-200;
-
-        address first = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
-        address second = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
-        address third = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
-        address fourth = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
-        
-        uint amountFirst = 50;
-        uint amountSecond = 50;
-        uint amountThird = 50;
-        uint amountFourth = 50;
-
-        multiSender.multiSendFour.value(200)([first,second,third,fourth],
-        [amountFirst,amountSecond,amountThird,amountFourth]);
-
-        uint afterSend = this.balance;
-
-        Assert.equal(afterSend, expected, "Balance is correct after FourSend");
-    } */
 
     function () public payable {
 
