@@ -27,12 +27,12 @@ contract TestMultiSend {
     }
 
     function testEscapeHatchDestinationIsWHG() public {
-        address expected = address(0x8ff920020c8ad673661c8117f2855c384758c572);
+        address expected = address(0x8Ff920020c8AD673661c8117f2855C384758C572);
 
         address destination = multiSender.escapeHatchDestination();
 
         Assert.equal(expected, destination,
-        "Escape Hatch Caller is Address is 0x8ff920020c8ad673661c8117f2855c384758c572");
+        "Escape Hatch Caller is Address is 0x8Ff920020c8AD673661c8117f2855C384758C572");
     }
 
     function testCanSendToTwoAddresses() public {
@@ -57,6 +57,31 @@ contract TestMultiSend {
         uint afterSend = this.balance;
 
         Assert.equal(afterSend, expected, "Balance is correct after TwoSend");
+    }
+
+    function testCanSendLeftoversTwoAddresses() public {
+        uint expected = this.balance-100;
+
+        address firstAddress = 0x6330A553Fc93768F612722BB8c2eC78aC90B3bbc;
+        address secondAddress = 0x5AEDA56215b167893e80B4fE645BA6d5Bab767DE;
+
+        address[] memory addresses = new address[](2);
+        addresses[0] = firstAddress;
+        addresses[1] = secondAddress;
+        
+        uint amountFirst = 50;
+        uint amountSecond = 50;
+
+        uint[] memory amounts = new uint[](2);
+        amounts[0] = amountFirst;
+        amounts[1] = amountSecond;
+
+        multiSender.multiTransfer.value(150)(addresses,amounts);
+
+        uint afterSend = this.balance;
+
+        Assert.equal(afterSend, expected, "Balance is correct after TwoSend");
+
     }
 
     /* function testCanSendToThreeAddresses() public {
