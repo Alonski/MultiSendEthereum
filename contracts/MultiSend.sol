@@ -1,7 +1,6 @@
 pragma solidity ^0.4.18;
 
 import "giveth-common-contracts/contracts/Escapable.sol";
-import "giveth-common-contracts/contracts/SafeMath.sol";
 
 // TightlyPacked is cheaper if you need to store input data and if amount is less than 12 bytes.
 // Normal is cheaper if you don't need to store input data or if amounts are greater than 12 bytes.
@@ -40,7 +39,6 @@ contract MultiSend is Escapable {
         uint startBalance = this.balance;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
             _safeTransfer(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
-            toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
             MultiTransfer(msg.sender, msg.value, to, amount);
         }
         require(startBalance - msg.value == this.balance);
@@ -51,7 +49,6 @@ contract MultiSend is Escapable {
         uint startBalance = this.balance;
         for (uint i = 0; i < _address.length; i++) {
             _safeTransfer(_address[i], _amount[i]);
-            toReturn = SafeMath.sub(toReturn, _amount[i]);
             MultiTransfer(msg.sender, msg.value, _address[i], _amount[i]);
         }
         require(startBalance - msg.value == this.balance);
@@ -62,7 +59,6 @@ contract MultiSend is Escapable {
         uint startBalance = this.balance;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
             _safeCall(address(_addressAndAmount[i] >> 96), uint(uint96(_addressAndAmount[i])));
-            toReturn = SafeMath.sub(toReturn, uint(uint96(_addressAndAmount[i])));
             MultiCall(msg.sender, msg.value, to, amount);
         }
         require(startBalance - msg.value == this.balance);
@@ -73,7 +69,6 @@ contract MultiSend is Escapable {
         uint startBalance = this.balance;
         for (uint i = 0; i < _address.length; i++) {
             _safeCall(_address[i], _amount[i]);
-            toReturn = SafeMath.sub(toReturn, _amount[i]);
             MultiCall(msg.sender, msg.value, _address[i], _amount[i]);
         }
         require(startBalance - msg.value == this.balance);
