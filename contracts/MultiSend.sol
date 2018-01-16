@@ -190,20 +190,20 @@ contract MultiSend is Escapable {
         }
     }
 
-    /// @notice `_safeTransfer` is used internally when transfer funds safely.
+    /// @notice `_safeTransfer` is used internally to transfer funds safely.
     function _safeTransfer(address _to, uint _amount) internal {
         require(_to != 0);
         require(_to.transfer(_amount));
     }
 
-    /// @notice `_safeCall` is used internally when call a contract safely.
+    /// @notice `_safeCall` is used internally to call a contract safely.
     function _safeCall(address _to, uint _amount) internal {
         require(_to != 0);
         require(_to.call.value(_amount)());
     }
 
-    /// @notice `_safeERC20Transfer` is used internally when
-    ///  transfer a quantity of ERC20 tokens.
+    /// @notice `_safeERC20Transfer` is used internally to
+    ///  transfer a quantity of ERC20 tokens safely.
     function _safeERC20Transfer(ERC20 _token, address _to, uint _amount)
     internal
     {
@@ -211,8 +211,8 @@ contract MultiSend is Escapable {
         require(_token.transferFrom(msg.sender, _to, _amount));
     }
 
-    /// @dev Default payable function to not allow sending to contract;
-    ///  remember this does not necesarily prevent the contract
+    /// @dev Default payable function to not allow sending to contract
+    ///  Remember this does not necessarily prevent the contract
     ///  from accumulating funds.
     function () public payable {
         revert();
