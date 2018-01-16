@@ -65,7 +65,6 @@ contract MultiSend is Escapable {
     function multiTransferTightlyPacked(bytes32[] _addressesAndAmounts)
     payable public returns(bool)
     {
-        function multiTransferTightlyPacked(bytes32[] _addressAndAmount) payable public returns(bool) {
         uint startBalance = this.balance;
         for (uint i = 0; i < _addressAndAmount.length; i++) {
             address to = address(_addressAndAmount[i] >> 96);
