@@ -25,7 +25,7 @@ contract MultiSend is Escapable {
     /// @dev Hardcoded escapeHatchCaller
     address CALLER = 0x839395e20bbB182fa440d08F850E6c7A8f6F0780;
     /// @dev Hardcoded escapeHatchDestination
-    address DESTINATION = 0x8ff920020c8ad673661c8117f2855c384758c572;
+    address DESTINATION = 0x8Ff920020c8AD673661c8117f2855C384758C572;
 
     event MultiTransfer(
         address indexed _from,
@@ -43,7 +43,6 @@ contract MultiSend is Escapable {
 
     event MultiERC20Transfer(
         address indexed _from,
-        uint indexed _value,
         address _to,
         uint _amount,
         ERC20 _token
@@ -160,7 +159,7 @@ contract MultiSend is Escapable {
             address to = address(_addressesAndAmounts[i] >> 96);
             uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeERC20Transfer(_token, to, amount);
-            MultiERC20Transfer(msg.sender, msg.value, to, amount, _token);
+            MultiERC20Transfer(msg.sender, to, amount, _token);
         }
     }
 
@@ -179,7 +178,6 @@ contract MultiSend is Escapable {
             _safeERC20Transfer(_token, _addresses[i], _amounts[i]);
             MultiERC20Transfer(
                 msg.sender,
-                msg.value,
                 _addresses[i],
                 _amounts[i],
                 _token
