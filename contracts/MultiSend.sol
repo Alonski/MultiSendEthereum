@@ -66,9 +66,9 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i < _addressAndAmount.length; i++) {
-            address to = address(_addressAndAmount[i] >> 96);
-            uint amount = uint(uint96(_addressAndAmount[i]));
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
+            uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeTransfer(to, amount);
             MultiTransfer(msg.sender, msg.value, to, amount);
         }
@@ -85,9 +85,9 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i < _address.length; i++) {
-            _safeTransfer(_address[i], _amount[i]);
-            MultiTransfer(msg.sender, msg.value, _address[i], _amount[i]);
+        for (uint i = 0; i < _addresses.length; i++) {
+            _safeTransfer(_addresses[i], _amounts[i]);
+            MultiTransfer(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
         require(startBalance - msg.value == this.balance);
         return true;
@@ -108,9 +108,9 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i < _addressAndAmount.length; i++) {
-            address to = address(_addressAndAmount[i] >> 96);
-            uint amount = uint(uint96(_addressAndAmount[i]));
+        for (uint i = 0; i < _addressesAndAmounts.length; i++) {
+            address to = address(_addressesAndAmounts[i] >> 96);
+            uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeCall(to, amount);
             MultiCall(msg.sender, msg.value, to, amount);
         }
@@ -126,9 +126,9 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint startBalance = this.balance;
-        for (uint i = 0; i < _address.length; i++) {
-            _safeCall(_address[i], _amount[i]);
-            MultiCall(msg.sender, msg.value, _address[i], _amount[i]);
+        for (uint i = 0; i < _addresses.length; i++) {
+            _safeCall(_addresses[i], _amounts[i]);
+            MultiCall(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
         require(startBalance - msg.value == this.balance);
         return true;
@@ -185,7 +185,7 @@ contract MultiSend is Escapable {
     /// @notice `_safeTransfer` is used internally when transfer funds safely.
     function _safeTransfer(address _to, uint _amount) internal {
         require(_to != 0);
-        require(_to.transfer(_amount));
+        _to.transfer(_amount);
     }
 
     /// @notice `_safeCall` is used internally when call a contract safely.
