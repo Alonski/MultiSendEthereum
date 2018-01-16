@@ -48,3 +48,9 @@ This allows calling one function with parameters to send multiple amounts to mul
 * __Where can I find more documentation?__
 
     Check out [Truffle](http://truffleframework.com/)
+
+
+## Contributors
+* [@Alonski](https://github.com/alonski) (Alon Bukai)
+* [@Quazia](https://github.com/quazia) (Arthur Lunn)
+* [@Lastperson](https://github.com/lastperson) (Oleksii Matiiasevych)
