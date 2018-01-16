@@ -115,10 +115,7 @@ contract MultiSend is Escapable {
             address to = address(_addressesAndAmounts[i] >> 96);
             uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeCall(to, amount);
-            toReturn = SafeMath.sub(
-                toReturn,
-                uint(uint96(_addressesAndAmounts[i]))
-            );
+            toReturn = SafeMath.sub(toReturn, amount);
             MultiCall(msg.sender, msg.value, to, amount);
         }
         _safeTransfer(msg.sender, toReturn);
@@ -133,10 +130,10 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint toReturn = msg.value;
-        for (uint i = 0; i < _address.length; i++) {
-            _safeCall(_address[i], _amount[i]);
-            toReturn = SafeMath.sub(toReturn, _amount[i]);
-            MultiCall(msg.sender, msg.value, _address[i], _amount[i]);
+        for (uint i = 0; i < _addresses.length; i++) {
+            _safeCall(_addresses[i], _amounts[i]);
+            toReturn = SafeMath.sub(toReturn, _amounts[i]);
+            MultiCall(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
         _safeTransfer(msg.sender, toReturn);
         return true;
@@ -193,7 +190,7 @@ contract MultiSend is Escapable {
     /// @notice `_safeTransfer` is used internally to transfer funds safely.
     function _safeTransfer(address _to, uint _amount) internal {
         require(_to != 0);
-        require(_to.transfer(_amount));
+        _to.transfer(_amount);
     }
 
     /// @notice `_safeCall` is used internally to call a contract safely.
