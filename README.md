@@ -54,3 +54,4 @@ This allows calling one function with parameters to send multiple amounts to mul
 * [@Alonski](https://github.com/alonski) (Alon Bukai)
 * [@Quazia](https://github.com/quazia) (Arthur Lunn)
 * [@Lastperson](https://github.com/lastperson) (Oleksii Matiiasevych)
+* [@GriffGreen](https://github.com/griffgreen) (Griff Green)
