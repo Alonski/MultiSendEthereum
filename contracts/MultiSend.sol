@@ -18,7 +18,10 @@ import "giveth-common-contracts/contracts/SafeMath.sol";
 ///  some situations allow for gas savings. TightlyPacked is cheaper if you
 ///  need to store input data and if amount is less than 12 bytes. Normal is
 ///  cheaper if you don't need to store input data or if amounts are greater
-///  than 12 bytes. Supports deterministic deployment. As explained
+///  than 12 bytes. 12 bytes allows for sends of up to 2^96-1 units, 79 billion
+///  ETH, so tightly packed functions will work for any ETH send but may not 
+///  work for token sends when the token has a high number of decimals or a 
+///  very large total supply. Supports deterministic deployment. As explained
 ///  here: https://github.com/ethereum/EIPs/issues/777#issuecomment-356103528
 contract MultiSend is Escapable {
   
