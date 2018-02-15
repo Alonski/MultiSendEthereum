@@ -133,10 +133,10 @@ contract MultiSend is Escapable {
     payable public returns(bool)
     {
         uint toReturn = msg.value;
-        for (uint i = 0; i < _address.length; i++) {
-            _safeCall(_address[i], _amount[i]);
-            toReturn = SafeMath.sub(toReturn, _amount[i]);
-            MultiCall(msg.sender, msg.value, _address[i], _amount[i]);
+        for (uint i = 0; i < _addresses.length; i++) {
+            _safeCall(_addresses[i], _amounts[i]);
+            toReturn = SafeMath.sub(toReturn, _amounts[i]);
+            MultiCall(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
         _safeTransfer(msg.sender, toReturn);
         return true;
@@ -157,8 +157,7 @@ contract MultiSend is Escapable {
     (
         ERC20 _token,
         bytes32[] _addressesAndAmounts
-    ) public
-    {
+    ) public {
         for (uint i = 0; i < _addressesAndAmounts.length; i++) {
             address to = address(_addressesAndAmounts[i] >> 96);
             uint amount = uint(uint96(_addressesAndAmounts[i]));
@@ -176,8 +175,7 @@ contract MultiSend is Escapable {
         ERC20 _token,
         address[] _addresses,
         uint[] _amounts
-    ) public
-    {
+    ) public {
         for (uint i = 0; i < _addresses.length; i++) {
             _safeERC20Transfer(_token, _addresses[i], _amounts[i]);
             MultiERC20Transfer(
@@ -193,7 +191,7 @@ contract MultiSend is Escapable {
     /// @notice `_safeTransfer` is used internally to transfer funds safely.
     function _safeTransfer(address _to, uint _amount) internal {
         require(_to != 0);
-        require(_to.transfer(_amount));
+        _to.transfer(_amount);
     }
 
     /// @notice `_safeCall` is used internally to call a contract safely.
@@ -204,9 +202,7 @@ contract MultiSend is Escapable {
 
     /// @notice `_safeERC20Transfer` is used internally to
     ///  transfer a quantity of ERC20 tokens safely.
-    function _safeERC20Transfer(ERC20 _token, address _to, uint _amount)
-    internal
-    {
+    function _safeERC20Transfer(ERC20 _token, address _to, uint _amount) internal {
         require(_to != 0);
         require(_token.transferFrom(msg.sender, _to, _amount));
     }
