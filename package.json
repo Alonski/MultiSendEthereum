@@ -24,12 +24,12 @@
     }
   ],
   "name": "multisend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "devDependencies": {
-    "truffle": "^4.0.4",
-    "eslint": "^4.15.0"
+    "truffle": "^4.0.6",
+    "eslint": "^4.17.0"
   },
   "dependencies": {
-    "giveth-common-contracts": "^0.4.0"
+    "giveth-common-contracts": "^0.6.0"
   }
 }

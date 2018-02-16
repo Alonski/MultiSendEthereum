@@ -7,7 +7,7 @@
 // more details. You should have received a copy of the GNU General Public
 // License along with this program. If not, see http://www.gnu.org/licenses/
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 import "giveth-common-contracts/contracts/Escapable.sol";
 import "giveth-common-contracts/contracts/SafeMath.sol";
