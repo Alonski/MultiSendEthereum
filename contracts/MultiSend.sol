@@ -53,7 +53,7 @@ contract MultiSend is Escapable {
     );
 
     /// @notice Constructor using Escapable and Hardcoded values
-    function MultiSend() Escapable(CALLER, DESTINATION) public {}
+    constructor() Escapable(CALLER, DESTINATION) public {}
 
     /// @notice Send to multiple addresses using a byte32 array which
     ///  includes the address and the amount.
