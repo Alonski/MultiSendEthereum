@@ -75,7 +75,7 @@ contract MultiSend is Escapable {
             uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeTransfer(to, uint(uint96(_addressesAndAmounts[i])));
             toReturn = SafeMath.sub(toReturn, amount);
-            MultiTransfer(msg.sender, msg.value, to, amount);
+            emit MultiTransfer(msg.sender, msg.value, to, amount);
         }
         _safeTransfer(msg.sender, toReturn);
         return true;
@@ -93,7 +93,7 @@ contract MultiSend is Escapable {
         for (uint i = 0; i < _addresses.length; i++) {
             _safeTransfer(_addresses[i], _amounts[i]);
             toReturn = SafeMath.sub(toReturn, _amounts[i]);
-            MultiTransfer(msg.sender, msg.value, _addresses[i], _amounts[i]);
+            emit MultiTransfer(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
         _safeTransfer(msg.sender, toReturn);
         return true;
@@ -122,7 +122,7 @@ contract MultiSend is Escapable {
                 toReturn,
                 uint(uint96(_addressesAndAmounts[i]))
             );
-            MultiCall(msg.sender, msg.value, to, amount);
+            emit MultiCall(msg.sender, msg.value, to, amount);
         }
         _safeTransfer(msg.sender, toReturn);
         return true;
@@ -139,7 +139,7 @@ contract MultiSend is Escapable {
         for (uint i = 0; i < _addresses.length; i++) {
             _safeCall(_addresses[i], _amounts[i]);
             toReturn = SafeMath.sub(toReturn, _amounts[i]);
-            MultiCall(msg.sender, msg.value, _addresses[i], _amounts[i]);
+            emit MultiCall(msg.sender, msg.value, _addresses[i], _amounts[i]);
         }
         _safeTransfer(msg.sender, toReturn);
         return true;
@@ -165,7 +165,7 @@ contract MultiSend is Escapable {
             address to = address(_addressesAndAmounts[i] >> 96);
             uint amount = uint(uint96(_addressesAndAmounts[i]));
             _safeERC20Transfer(_token, to, amount);
-            MultiERC20Transfer(msg.sender, msg.value, to, amount, _token);
+            emit MultiERC20Transfer(msg.sender, msg.value, to, amount, _token);
         }
     }
 
@@ -181,7 +181,7 @@ contract MultiSend is Escapable {
     ) public {
         for (uint i = 0; i < _addresses.length; i++) {
             _safeERC20Transfer(_token, _addresses[i], _amounts[i]);
-            MultiERC20Transfer(
+            emit MultiERC20Transfer(
                 msg.sender,
                 msg.value,
                 _addresses[i],
