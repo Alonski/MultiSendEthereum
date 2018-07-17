@@ -28,7 +28,7 @@ contract MultiSend is Escapable {
     /// @dev Hardcoded escapeHatchCaller
     address CALLER = 0x839395e20bbB182fa440d08F850E6c7A8f6F0780;
     /// @dev Hardcoded escapeHatchDestination
-    address DESTINATION = 0x8ff920020c8ad673661c8117f2855c384758c572;
+    address DESTINATION = 0x8Ff920020c8AD673661c8117f2855C384758C572;
 
     event MultiTransfer(
         address indexed _from,
